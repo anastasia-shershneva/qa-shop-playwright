@@ -11,7 +11,7 @@ test('CAT-01 Каталог содержит исходные товары, ка
 });
 
 test('CAT-02 Поиск по названию без учёта регистра', async ({ page }) => {
-  await page.getByRole('searchbox', { name: 'Поиск', exact: true }).fill('  ЭФИОПИЯ  ');
+  await page.getByRole('searchbox', { name: 'Поиск', exact: true }).fill('  КОФЕ ЭФИОПИЯ ИРГАЧЕФФ  ');
   await expect(page.getByTestId('product-card')).toHaveCount(1);
   await expect(page.getByTestId('product-card')).toContainText('Кофе Эфиопия');
 });

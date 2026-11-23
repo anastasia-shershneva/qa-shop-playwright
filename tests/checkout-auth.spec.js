@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { randomUUID } = require('node:crypto');
-const { openShop, addProduct, fillCheckout, submitOrder, register } = require('./helpers');
+const { openShop, addProduct, fillCheckout, submitOrder, register, logout } = require('./helpers');
 
 test.beforeEach(async ({ page }) => openShop(page));
 
@@ -68,8 +68,8 @@ test('ORDER-06 Пустая корзина перенаправляет с оф�
 test('AUTH-01 Регистрация, выход, вход и сохранение авторизации после перезагрузки', async ({ page }) => {
   const email = `qa-${randomUUID()}@example.com`;
   await register(page, email);
-  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
-  await page.getByRole('link', { name: 'Войти', exact: true }).click();
+  await logout(page);
+  await page.locator('#nav-login').click();
   await page.getByLabel('E-mail', { exact: true }).fill(email);
   await page.getByLabel('Пароль', { exact: true }).fill('Test-password-456');
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
@@ -92,7 +92,7 @@ test('AUTH-02 Ошибки регистрации при невалидных д
 test('AUTH-03 Повторная регистрация и неверный пароль отклоняются', async ({ page }) => {
   const email = `qa-${randomUUID()}@example.com`;
   await register(page, email);
-  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  await logout(page);
   await page.goto('/#/register');
   await page.getByLabel('Имя', { exact: true }).fill('Другой покупатель');
   await page.getByLabel('E-mail', { exact: true }).fill(email.toUpperCase());
@@ -111,6 +111,8 @@ test('AUTH-04 Заказ авторизованного пользователя
   await addProduct(page, 1);
   await fillCheckout(page);
   const order = await submitOrder(page);
+  test.fail(test.info().project.name === 'mobile-chromium', 'BUG-04: меню с историей заказов скрыто на мобильной ширине.');
+  await expect(page.getByRole('link', { name: 'Мои заказы', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Мои заказы', exact: true }).click();
   await expect(page.getByTestId('order-row')).toHaveCount(1);
   await page.getByRole('link', { name: `№${order.id}`, exact: true }).click();

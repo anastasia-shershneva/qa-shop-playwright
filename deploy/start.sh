@@ -6,7 +6,8 @@ case "$port" in
   ''|*[!0-9]*) echo 'PORT must be a number' >&2; exit 1 ;;
 esac
 
-cp -r /app/monitoring/provisioning /tmp/grafana-provisioning
+mkdir -p /tmp/grafana-provisioning
+cp -r /app/monitoring/provisioning/. /tmp/grafana-provisioning/
 sed -i 's|http://prometheus:9090|http://127.0.0.1:9090|' /tmp/grafana-provisioning/datasources/prometheus.yml
 sed -i 's|/var/lib/grafana/dashboards|/app/monitoring/dashboards|' /tmp/grafana-provisioning/dashboards/default.yml
 sed "s/__PORT__/$port/g" /app/deploy/nginx.conf > /tmp/nginx/nginx.conf

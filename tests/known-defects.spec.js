@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { randomUUID } = require('node:crypto');
-const { openShop, addProduct, fillCheckout, submitOrder, register } = require('./helpers');
+const { openShop, addProduct, fillCheckout, submitOrder, register, logout } = require('./helpers');
 
 test.beforeEach(async ({ page }) => openShop(page));
 
@@ -29,7 +29,7 @@ test('BUG-03 Второй аккаунт не должен видеть зака
   await fillCheckout(page, 'courier');
   const order = await submitOrder(page);
   const owner = order.userId;
-  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  await logout(page);
   await register(page, `other-${randomUUID()}@example.com`);
   const me = await (await page.request.get('/api/auth/me')).json();
   expect(me.user.id).not.toBe(owner);

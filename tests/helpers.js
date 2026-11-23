@@ -46,6 +46,15 @@ async function fillCheckout(page, delivery = 'pickup') {
   }
 }
 
+async function logout(page) {
+  const response = page.waitForResponse(r =>
+    r.url().endsWith('/api/auth/logout') && r.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  expect((await response).ok()).toBeTruthy();
+  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeHidden();
+  await expect(page.getByRole('heading', { name: 'Каталог', exact: true })).toBeVisible();
+}
+
 async function submitOrder(page) {
   const completed = page.waitForResponse(response =>
     response.url().endsWith('/api/orders') && response.request().method() === 'POST');
@@ -57,4 +66,4 @@ async function submitOrder(page) {
   return order;
 }
 
-module.exports = { openShop, addProduct, openCart, register, fillCheckout, submitOrder };
+module.exports = { openShop, addProduct, openCart, register, logout, fillCheckout, submitOrder };
