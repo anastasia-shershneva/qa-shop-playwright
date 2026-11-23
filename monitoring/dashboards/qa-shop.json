@@ -2,7 +2,7 @@
   "uid": "qa-shop",
   "title": "QA Shop — сервис и покупки",
   "schemaVersion": 41,
-  "version": 1,
+  "version": 2,
   "refresh": "15s",
   "timezone": "browser",
   "time": {
@@ -164,7 +164,9 @@
           "unit": "percentunit",
           "color": {
             "mode": "palette-classic"
-          }
+          },
+          "min": 0,
+          "max": 1
         },
         "overrides": []
       },
@@ -180,9 +182,9 @@
     },
     {
       "id": 5,
-      "title": "Заказы за выбранный период",
+      "title": "Оформленные заказы с запуска приложения",
       "type": "stat",
-      "description": "",
+      "description": "Накопленный счётчик текущего процесса магазина, сбрасывается при перезапуске. Не зависит от выбранного периода дашборда.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -196,8 +198,10 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(shop_orders_total{job=\"qa-shop\"}[$__range])) or vector(0)",
-          "legendFormat": "{{route}} {{status}}"
+          "expr": "sum(shop_orders_total{job=\"qa-shop\"}) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
         }
       ],
       "fieldConfig": {
@@ -205,25 +209,31 @@
           "unit": "short",
           "color": {
             "mode": "palette-classic"
-          }
+          },
+          "decimals": 0
         },
         "overrides": []
       },
       "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
         },
-        "tooltip": {
-          "mode": "single"
-        }
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
       }
     },
     {
       "id": 6,
-      "title": "Выручка за выбранный период",
+      "title": "Сумма заказов с запуска приложения",
       "type": "stat",
-      "description": "",
+      "description": "Накопленный счётчик текущего процесса магазина, сбрасывается при перезапуске. Не зависит от выбранного периода дашборда. Это сумма оформленных заказов, а не подтверждённых платежей.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -237,8 +247,10 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(shop_revenue_rub_total{job=\"qa-shop\"}[$__range])) or vector(0)",
-          "legendFormat": "{{route}} {{status}}"
+          "expr": "sum(shop_revenue_rub_total{job=\"qa-shop\"}) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "range": false
         }
       ],
       "fieldConfig": {
@@ -246,18 +258,24 @@
           "unit": "currencyRUB",
           "color": {
             "mode": "palette-classic"
-          }
+          },
+          "decimals": 2
         },
         "overrides": []
       },
       "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
         },
-        "tooltip": {
-          "mode": "single"
-        }
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
       }
     },
     {
