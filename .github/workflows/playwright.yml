@@ -28,3 +28,17 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 14
+  deployment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: docker build -t qa-shop-deployment .
+      - run: docker run -d --name qa-shop-deployment --memory=512m -p 10000:10000 qa-shop-deployment
+      - run: node deploy/smoke.mjs
+      - name: Container logs
+        if: always()
+        run: docker logs qa-shop-deployment

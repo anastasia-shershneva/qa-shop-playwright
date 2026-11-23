@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: qa-shop-playwright
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: GRAFANA_ADMIN_PASSWORD
+        generateValue: true
