@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: '22'
       - run: docker build -t qa-shop-deployment .
-      - run: docker run -d --name qa-shop-deployment --memory=512m -p 10000:10000 qa-shop-deployment
+      - run: docker run -d --name qa-shop-deployment --memory=512m --tmpfs /tmp -p 10000:10000 qa-shop-deployment
       - run: node deploy/smoke.mjs
       - name: Container logs
         if: always()
