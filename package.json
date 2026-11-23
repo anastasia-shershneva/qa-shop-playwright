@@ -1,0 +1,17 @@
+{
+  "name": "qa-shop-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:desktop": "playwright test --project=chromium",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

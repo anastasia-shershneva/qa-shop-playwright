@@ -1,0 +1,14 @@
+services:
+  shop:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      # ALLOW_TEST_RESET: "1"   # включает POST /api/test/reset (сброс данных к исходным)
+    volumes:
+      - shop-data:/data
+
+volumes:
+  shop-data:

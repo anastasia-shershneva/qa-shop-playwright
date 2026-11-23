@@ -1,0 +1,9 @@
+node_modules/
+qa-shop/node_modules/
+qa-shop/data/
+.test-data/
+test-results/
+playwright-report/
+.env
+.DS_Store
+monitoring/data/
