@@ -72,10 +72,14 @@ test('AUTH-01 Регистрация, выход, вход и сохранени
   await page.locator('#nav-login').click();
   await page.getByLabel('E-mail', { exact: true }).fill(email);
   await page.getByLabel('Пароль', { exact: true }).fill('Test-password-456');
+  const loggedIn = page.waitForResponse(r =>
+    r.url().endsWith('/api/auth/login') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeVisible();
+  expect((await loggedIn).status()).toBe(200);
+  await expect(page.locator('#user-name')).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeVisible();
+  await expect(page.locator('#user-name')).toHaveText('Тестовый покупатель');
+  await expect(page.locator('#user-name')).toBeVisible();
 });
 
 test('AUTH-02 Ошибки регистрации при невалидных данных', async ({ page }) => {

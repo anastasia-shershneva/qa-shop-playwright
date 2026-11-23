@@ -4,6 +4,14 @@ const { openShop, addProduct, fillCheckout, submitOrder, register, logout } = re
 
 test.beforeEach(async ({ page }) => openShop(page));
 
+test('BUG-05 Кнопка выхода должна быть скрыта для гостя', async ({ page }) => {
+  const me = await (await page.request.get('/api/auth/me')).json();
+  expect(me.user).toBeNull();
+  await expect(page.locator('#nav-logout')).toHaveAttribute('hidden', '');
+  test.fail(true, 'BUG-05: CSS display:inline-block переопределяет hidden у кнопки выхода.');
+  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeHidden();
+});
+
 test('BUG-01 Нулевое количество товара должно отклоняться API', async ({ page }) => {
   const response = await page.request.post('/api/cart/items', { data: { productId: 1, qty: 0 } });
   const cart = await (await page.request.get('/api/cart')).json();

@@ -32,8 +32,13 @@ async function register(page, email) {
   await page.getByLabel('Имя', { exact: true }).fill('Тестовый покупатель');
   await page.getByLabel('E-mail', { exact: true }).fill(email);
   await page.getByLabel('Пароль', { exact: true }).fill('Test-password-456');
+  const response = page.waitForResponse(r =>
+    r.url().endsWith('/api/auth/register') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Зарегистрироваться', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeVisible();
+  expect((await response).status()).toBe(201);
+  await expect(page.locator('#user-name')).toHaveText('Тестовый покупатель');
+  await expect(page.locator('#user-name')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Каталог', exact: true })).toBeVisible();
 }
 
 async function fillCheckout(page, delivery = 'pickup') {
@@ -51,7 +56,10 @@ async function logout(page) {
     r.url().endsWith('/api/auth/logout') && r.request().method() === 'POST');
   await page.getByRole('button', { name: 'Выйти', exact: true }).click();
   expect((await response).ok()).toBeTruthy();
-  await expect(page.getByRole('button', { name: 'Выйти', exact: true })).toBeHidden();
+  await expect(page.locator('#nav-logout')).toHaveAttribute('hidden', '');
+  await expect(page.locator('#user-name')).toHaveAttribute('hidden', '');
+  const me = await (await page.request.get('/api/auth/me')).json();
+  expect(me.user).toBeNull();
   await expect(page.getByRole('heading', { name: 'Каталог', exact: true })).toBeVisible();
 }
 
